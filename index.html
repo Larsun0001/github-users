@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Github Generator</title>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <body>
+        <div id="mydiv"></div>
+
+    <script type="text/babel">
+    swal({
+  title: "Welcome to my React Github Generator",
+  text: "Am not good at UI \nThese Took me time to buiild, But am greatful am done with it..\n\n INSTRUCTIONS\n\n Search for any Github User name.. Try searching for a wrong Username and see the 404 error.. Please an upvote and share makes me happy♥️♥️",
+  icon: "success",
+  button: "Continue",
+  closeOnEsc: false,
+  closeOnClickOutside: false,
+})
+       const App = () => {
+  const [text, setText] = React.useState('emeka');
+  const [user, setUser] = React.useState({})
+  const [load, setLoad] = React.useState(false)
+
+  const fetchUser = async () => {
+    setLoad(true)
+    const req = await fetch(`https://api.github.com/users/${text}`)
+    const res = await req.json();
+    setUser({...res})
+    setLoad(false)
+  }
+  React.useEffect(() =>{
+    fetchUser();
+  },[])
+  const checkUser = (e) => {
+    e.preventDefault();
+    fetchUser();
+  }
+  return (
+    <div>
+  <Header checkUser = {checkUser} text = {text} setText = {setText}/>
+  <Body user = {user} load = {load}/>
+  {load && <Loader />}
+  </div>
+  );
+}
+
+const Header = ({ checkUser, setText, text }) => {
+  return (
+    <header>
+    <form onSubmit = {checkUser}>
+     <input type = 'text' placeholder = 'Search User' onChange = {(e) => setText(e.target.value)} value = {text}/>
+     <button type = 'submit'>Search</button>
+    </form>
+    </header>
+  );
+}
+
+const Body = ({ user, load }) => {
+  return (
+    <div className = 'section'>
+      {user.message === 'Not Found'? <div className = 'alert-box'><h1 className = 'alert'>404....Opps Theres no user with these name <span>Search name Again or Spell name Correctly</span></h1></div> : <Profile user = {user}/>}
+    </div>
+  );
+}
+
+const Profile = ({ user }) => {
+  return (
+    <div className = 'main-profile'>
+      <div className = 'profile-img'>
+      <img src = {user.avatar_url} alt = {user.login}/>
+      </div>
+      <div className = 'profile-name'>
+      <h3>{user.name === null ? user.login : user.name}</h3>
+      </div>
+      <div className = 'profile-follow'>
+      <div>
+      <h3>Followers</h3>
+      <h1>{Object.keys(user).length === 0 ? '0' : user.followers}</h1>
+      </div>
+      <div>
+        <h3>Following</h3>
+        <h1>{Object.keys(user).length === 0 ? '0' : user.following}</h1>
+      </div>
+      </div>
+      <div className = 'profile-button'>
+      <button><a href = {user.url} target = '_blank'>Click to see Api</a></button>
+      </div>
+    </div>
+  );
+}
+
+const Loader = () => {
+  return (
+    <div className = 'loader-body'>
+        <div className="loading-bar">
+            <div className="load-section">
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              <div className="loading-text">
+                Searching...
+              </div>
+            </div>
+          </div>
+    </div>
+  );
+}
+
+
+       
+       ReactDOM.render(<App />, document.getElementById('mydiv'))
+      </script>
+    </body>
+</html>
